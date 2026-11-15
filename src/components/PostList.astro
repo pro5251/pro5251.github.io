@@ -1,0 +1,31 @@
+---
+import { postUrl, type Post } from '../lib/posts';
+import PostMeta from './PostMeta.astro';
+import TagList from './TagList.astro';
+
+interface Props {
+	posts: Post[];
+	emptyText?: string;
+}
+
+const { posts, emptyText = '這裡還沒有文章。' } = Astro.props;
+---
+
+{
+	posts.length === 0 ? (
+		<p class="empty">{emptyText}</p>
+	) : (
+		<ul class="post-list">
+			{posts.map((post) => (
+				<li class="post-item">
+					<h2 class="post-item-title">
+						<a href={postUrl(post)}>{post.data.title}</a>
+					</h2>
+					<PostMeta post={post} />
+					{post.data.description && <p class="post-item-desc">{post.data.description}</p>}
+					<TagList tags={post.data.tags} />
+				</li>
+			))}
+		</ul>
+	)
+}

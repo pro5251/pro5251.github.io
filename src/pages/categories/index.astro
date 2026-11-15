@@ -1,0 +1,25 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { categoryUrl, getCategoryCounts, getPosts } from '../../lib/posts';
+
+const categories = getCategoryCounts(await getPosts());
+---
+
+<BaseLayout title="分類" description="依分類瀏覽所有文章。">
+	<h1 class="page-title">分類</h1>
+	<ul class="category-grid">
+		{
+			categories.map((c) => (
+				<li>
+					<a href={categoryUrl(c.key)} class="category-card">
+						<span class="category-card-name">
+							{c.name}
+							<span class="count">{c.count} 篇</span>
+						</span>
+						<span class="category-card-desc">{c.description}</span>
+					</a>
+				</li>
+			))
+		}
+	</ul>
+</BaseLayout>

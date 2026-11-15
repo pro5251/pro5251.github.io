@@ -1,0 +1,35 @@
+---
+import type { GetStaticPaths, Page } from 'astro';
+import Pagination from '../../../components/Pagination.astro';
+import PostList from '../../../components/PostList.astro';
+import { CATEGORIES, SITE, type CategoryKey } from '../../../consts';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { getPosts, type Post } from '../../../lib/posts';
+
+export const getStaticPaths = (async ({ paginate }) => {
+	const posts = await getPosts();
+	return Object.keys(CATEGORIES).flatMap((category) =>
+		paginate(
+			posts.filter((p) => p.data.category === category),
+			{ params: { category }, pageSize: SITE.postsPerPage },
+		),
+	);
+}) satisfies GetStaticPaths;
+
+interface Props {
+	page: Page<Post>;
+}
+
+const { page } = Astro.props;
+const key = Astro.params.category as CategoryKey;
+const info = CATEGORIES[key];
+const suffix = page.currentPage > 1 ? ` · 第 ${page.currentPage} 頁` : '';
+---
+
+<BaseLayout title={`${info.name}${suffix}`} description={info.description}>
+	<p class="breadcrumb"><a href="/categories/">分類</a> /</p>
+	<h1 class="page-title">{info.name}<span class="count">{page.total} 篇</span></h1>
+	<p class="page-desc">{info.description}</p>
+	<PostList posts={page.data} emptyText="這個分類還沒有文章。" />
+	<Pagination page={page} />
+</BaseLayout>

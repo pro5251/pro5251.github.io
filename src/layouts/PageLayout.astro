@@ -1,0 +1,16 @@
+---
+// 一般 Markdown 頁面（例如 about.md）使用的版型
+import BaseLayout from './BaseLayout.astro';
+
+interface Props {
+	frontmatter: { title: string; description?: string };
+}
+
+const { frontmatter } = Astro.props;
+---
+
+<BaseLayout title={frontmatter.title} description={frontmatter.description}>
+	<article class="prose page-prose">
+		<slot />
+	</article>
+</BaseLayout>

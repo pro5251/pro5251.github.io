@@ -1,0 +1,39 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="搜尋" description="搜尋全站文章。" noindex>
+	<link slot="head" rel="stylesheet" href="/pagefind/pagefind-ui.css" />
+	<h1 class="page-title">搜尋</h1>
+	<div id="search" class="search-box">
+		<noscript>搜尋功能需要啟用 JavaScript。</noscript>
+	</div>
+	<p class="search-hint" id="search-dev-hint" hidden>
+		搜尋索引會在 <code>npm run build</code> 時產生。開發模式下請改用 <code>npm run build &amp;&amp; npm run preview</code> 測試搜尋。
+	</p>
+</BaseLayout>
+
+<script is:inline>
+	(function () {
+		var s = document.createElement('script');
+		s.src = '/pagefind/pagefind-ui.js';
+		s.onload = function () {
+			var q = new URLSearchParams(location.search).get('q');
+			// eslint-disable-next-line no-undef
+			var ui = new PagefindUI({
+				element: '#search',
+				showSubResults: true,
+				showImages: false,
+				resetStyles: true,
+				pageSize: 10,
+				autofocus: true,
+				translations: { placeholder: '輸入關鍵字搜尋文章…', zero_results: '找不到「[SEARCH_TERM]」相關的文章' },
+			});
+			if (q) ui.triggerSearch(q);
+		};
+		s.onerror = function () {
+			document.getElementById('search-dev-hint').hidden = false;
+		};
+		document.body.appendChild(s);
+	})();
+</script>

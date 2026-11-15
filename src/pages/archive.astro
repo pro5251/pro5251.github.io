@@ -1,0 +1,31 @@
+---
+import FormattedDate from '../components/FormattedDate.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { categoryName, getPosts, groupByYear, postUrl } from '../lib/posts';
+
+const posts = await getPosts();
+const years = groupByYear(posts);
+---
+
+<BaseLayout title="歸檔" description="依時間排列的所有文章。">
+	<h1 class="page-title">歸檔<span class="count">共 {posts.length} 篇</span></h1>
+	{
+		years.map(([year, list]) => (
+			<section class="archive-year">
+				<h2>
+					{year} <span class="count">{list.length} 篇</span>
+				</h2>
+				<ul class="archive-list">
+					{list.map((post) => (
+						<li>
+							<FormattedDate date={post.data.pubDate} />
+							<a href={postUrl(post)}>{post.data.title}</a>
+							<span class="archive-category">{categoryName(post.data.category)}</span>
+						</li>
+					))}
+				</ul>
+			</section>
+		))
+	}
+	{posts.length === 0 && <p class="empty">還沒有文章。</p>}
+</BaseLayout>

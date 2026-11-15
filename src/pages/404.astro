@@ -1,0 +1,23 @@
+---
+import PostList from '../components/PostList.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getPosts } from '../lib/posts';
+
+const latest = (await getPosts()).slice(0, 5);
+---
+
+<BaseLayout title="找不到頁面" noindex>
+	<section class="not-found">
+		<p class="not-found-code">404</p>
+		<h1>找不到這個頁面</h1>
+		<p>網址可能打錯了，或文章已經移動。試試 <a href="/search/">搜尋</a>，或回到 <a href="/">首頁</a>。</p>
+	</section>
+	{
+		latest.length > 0 && (
+			<>
+				<h2 class="section-title">最新文章</h2>
+				<PostList posts={latest} />
+			</>
+		)
+	}
+</BaseLayout>

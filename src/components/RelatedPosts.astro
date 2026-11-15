@@ -1,0 +1,26 @@
+---
+import { postUrl, type Post } from '../lib/posts';
+import FormattedDate from './FormattedDate.astro';
+
+interface Props {
+	posts: Post[];
+}
+
+const { posts } = Astro.props;
+---
+
+{
+	posts.length > 0 && (
+		<section class="related" aria-labelledby="related-title">
+			<h2 id="related-title">相關文章</h2>
+			<ul>
+				{posts.map((post) => (
+					<li>
+						<a href={postUrl(post)}>{post.data.title}</a>
+						<FormattedDate date={post.data.pubDate} />
+					</li>
+				))}
+			</ul>
+		</section>
+	)
+}

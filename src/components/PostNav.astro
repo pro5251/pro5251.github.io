@@ -1,0 +1,35 @@
+---
+import { postUrl, type Post } from '../lib/posts';
+
+interface Props {
+	/** 較新的一篇 */
+	newer?: Post;
+	/** 較舊的一篇 */
+	older?: Post;
+}
+
+const { newer, older } = Astro.props;
+---
+
+{
+	(newer || older) && (
+		<nav class="post-nav" aria-label="上下篇文章">
+			<div>
+				{older && (
+					<a href={postUrl(older)} rel="prev">
+						<span class="post-nav-label">← 上一篇</span>
+						<span class="post-nav-title">{older.data.title}</span>
+					</a>
+				)}
+			</div>
+			<div class="post-nav-next">
+				{newer && (
+					<a href={postUrl(newer)} rel="next">
+						<span class="post-nav-label">下一篇 →</span>
+						<span class="post-nav-title">{newer.data.title}</span>
+					</a>
+				)}
+			</div>
+		</nav>
+	)
+}

@@ -1,0 +1,31 @@
+{
+	"文章 frontmatter": {
+		"scope": "markdown,mdx",
+		"prefix": "post",
+		"body": [
+			"---",
+			"title: \"$1\"",
+			"description: \"$2\"",
+			"pubDate: $CURRENT_YEAR-$CURRENT_MONTH-$CURRENT_DATE",
+			"category: ${3|tech,notes,life|}",
+			"tags: [$4]",
+			"draft: true",
+			"---",
+			"",
+			"$0"
+		],
+		"description": "新文章的 frontmatter"
+	},
+	"提示框": {
+		"scope": "markdown,mdx",
+		"prefix": "callout",
+		"body": ["> [!${1|NOTE,TIP,IMPORTANT,WARNING,CAUTION|}]", "> $0"],
+		"description": "GitHub 風格提示框"
+	},
+	"摺疊區塊": {
+		"scope": "markdown,mdx",
+		"prefix": "details",
+		"body": ["<details>", "<summary>$1</summary>", "", "$0", "", "</details>"],
+		"description": "可展開的摺疊區塊"
+	}
+}

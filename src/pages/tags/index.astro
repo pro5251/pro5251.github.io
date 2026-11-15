@@ -1,0 +1,25 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getPosts, getTagCounts } from '../../lib/posts';
+
+const tags = getTagCounts(await getPosts());
+---
+
+<BaseLayout title="標籤" description="依標籤瀏覽所有文章。">
+	<h1 class="page-title">標籤<span class="count">{tags.length} 個</span></h1>
+	{
+		tags.length === 0 ? (
+			<p class="empty">還沒有任何標籤。</p>
+		) : (
+			<ul class="tag-cloud">
+				{tags.map((t) => (
+					<li>
+						<a class="tag" href={`/tags/${t.slug}/`}>
+							#{t.name} <span class="count">{t.count}</span>
+						</a>
+					</li>
+				))}
+			</ul>
+		)
+	}
+</BaseLayout>

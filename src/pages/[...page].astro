@@ -1,0 +1,46 @@
+---
+import type { GetStaticPaths, Page } from 'astro';
+import Pagination from '../components/Pagination.astro';
+import PostList from '../components/PostList.astro';
+import { SITE } from '../consts';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { categoryUrl, getCategoryCounts, getPosts, pinnedFirst, type Post } from '../lib/posts';
+
+export const getStaticPaths = (async ({ paginate }) => {
+	const posts = pinnedFirst(await getPosts());
+	return paginate(posts, { pageSize: SITE.postsPerPage });
+}) satisfies GetStaticPaths;
+
+interface Props {
+	page: Page<Post>;
+}
+
+const { page } = Astro.props;
+const isFirst = page.currentPage === 1;
+const categories = getCategoryCounts(await getPosts()).filter((c) => c.count > 0);
+---
+
+<BaseLayout title={isFirst ? undefined : `第 ${page.currentPage} 頁`}>
+	{
+		isFirst && (
+			<section class="intro">
+				<h1>{SITE.title}</h1>
+				<p>{SITE.description}</p>
+				{categories.length > 0 && (
+					<ul class="category-chips" aria-label="分類">
+						{categories.map((c) => (
+							<li>
+								<a href={categoryUrl(c.key)}>
+									{c.name} <span class="count">{c.count}</span>
+								</a>
+							</li>
+						))}
+					</ul>
+				)}
+			</section>
+		)
+	}
+	{!isFirst && <h1 class="page-title">所有文章 · 第 {page.currentPage} 頁</h1>}
+	<PostList posts={page.data} />
+	<Pagination page={page} />
+</BaseLayout>
