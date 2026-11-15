@@ -9,7 +9,7 @@ export const SITE = {
 	/** 首頁與分類頁每頁文章數 */
 	postsPerPage: 10,
 	/** 預設社群分享圖（放在 public/ 底下的路徑），沒有就留空 */
-	ogImage: '',
+	ogImage: '/og-default.png',
 };
 
 export const NAV_LINKS = [

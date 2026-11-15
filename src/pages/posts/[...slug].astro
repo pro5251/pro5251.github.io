@@ -5,16 +5,24 @@ import Comments from '../../components/Comments.astro';
 import PostMeta from '../../components/PostMeta.astro';
 import PostNav from '../../components/PostNav.astro';
 import RelatedPosts from '../../components/RelatedPosts.astro';
+import SeriesBox from '../../components/SeriesBox.astro';
+import ShareLinks from '../../components/ShareLinks.astro';
 import TableOfContents from '../../components/TableOfContents.astro';
 import TagList from '../../components/TagList.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { categoryName, getPosts, getRelatedPosts, type Post } from '../../lib/posts';
+import { categoryName, getPosts, getRelatedPosts, getSeriesPosts, type Post } from '../../lib/posts';
 
 export async function getStaticPaths() {
 	const posts = await getPosts();
 	return posts.map((post, i) => ({
 		params: { slug: post.id },
-		props: { post, newer: posts[i - 1], older: posts[i + 1], related: getRelatedPosts(post, posts) },
+		props: {
+			post,
+			newer: posts[i - 1],
+			older: posts[i + 1],
+			related: getRelatedPosts(post, posts),
+			seriesPosts: post.data.series ? getSeriesPosts(post.data.series, posts) : [],
+		},
 	}));
 }
 
@@ -23,12 +31,15 @@ interface Props {
 	newer?: Post;
 	older?: Post;
 	related: Post[];
+	seriesPosts: Post[];
 }
 
-const { post, newer, older, related } = Astro.props;
+const { post, newer, older, related, seriesPosts } = Astro.props;
 const { Content, headings } = await render(post);
-const { title, description, pubDate, updatedDate, category, tags, heroImage, toc, comments, draft } = post.data;
-const showToc = toc && headings.filter((h) => h.depth >= 2 && h.depth <= 3).length >= 2;
+const { title, description, pubDate, updatedDate, category, tags, heroImage, heroImageAlt, series, toc, comments, draft } =
+	post.data;
+const showToc = toc && headings.filter((h) => h.depth >= 2 && h.depth <= 3 && h.slug !== 'footnote-label').length >= 2;
+const hasMermaid = post.body?.includes('```mermaid') ?? false;
 ---
 
 <BaseLayout
@@ -39,34 +50,46 @@ const showToc = toc && headings.filter((h) => h.depth >= 2 && h.depth <= 3).leng
 	noindex={draft}
 	wide={showToc}
 >
+	{hasMermaid && <link slot="head" rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />}
 	<div class="reading-progress" aria-hidden="true"></div>
 	<div class:list={['post-layout', { 'has-toc': showToc }]}>
-		<article class="post" data-pagefind-body>
-			<header class="post-header">
-				<h1 class="post-title">{title}</h1>
-				<PostMeta post={post} showUpdated />
-				<span hidden data-pagefind-filter="分類">{categoryName(category)}</span>
-				<span hidden data-pagefind-meta="日期">{pubDate.toISOString().slice(0, 10)}</span>
-			</header>
+		<div class="post-main">
+			<article class="post" data-pagefind-body>
+				<header class="post-header">
+					<h1 class="post-title">{title}</h1>
+					<PostMeta post={post} showUpdated />
+					<span hidden data-pagefind-filter="分類">{categoryName(category)}</span>
+					<span hidden data-pagefind-meta="日期">{pubDate.toISOString().slice(0, 10)}</span>
+				</header>
 
-			{
-				heroImage && (
-					<figure class="hero-image">
-						<Image src={heroImage} width={1200} alt="" loading="eager" fetchpriority="high" />
-					</figure>
-				)
-			}
+				{
+					heroImage && (
+						<figure class="hero-image">
+							<Image src={heroImage} width={1200} alt={heroImageAlt} loading="eager" fetchpriority="high" />
+						</figure>
+					)
+				}
 
-			{showToc && <div class="toc-inline"><TableOfContents headings={headings} /></div>}
+				{series && <SeriesBox series={series} posts={seriesPosts} currentId={post.id} />}
 
-			<div class="prose">
-				<Content />
+				{showToc && <div class="toc-inline"><TableOfContents headings={headings} /></div>}
+
+				<div class="prose">
+					<Content />
+				</div>
+
+				<footer class="post-footer">
+					<TagList tags={tags} />
+					<ShareLinks title={title} />
+				</footer>
+			</article>
+
+			<div class="post-after" data-pagefind-ignore>
+				<PostNav newer={newer} older={older} />
+				<RelatedPosts posts={related} />
+				{comments && <Comments />}
 			</div>
-
-			<footer class="post-footer">
-				<TagList tags={tags} />
-			</footer>
-		</article>
+		</div>
 
 		{
 			showToc && (
@@ -77,11 +100,9 @@ const showToc = toc && headings.filter((h) => h.depth >= 2 && h.depth <= 3).leng
 		}
 	</div>
 
-	<div class="post-after" data-pagefind-ignore>
-		<PostNav newer={newer} older={older} />
-		<RelatedPosts posts={related} />
-		{comments && <Comments />}
-	</div>
+	<dialog class="lightbox" aria-label="放大圖片">
+		<img alt="" />
+	</dialog>
 </BaseLayout>
 
 <script>
@@ -96,7 +117,7 @@ const showToc = toc && headings.filter((h) => h.depth >= 2 && h.depth <= 3).leng
 	});
 
 	// 2. 程式碼區塊複製按鈕
-	document.querySelectorAll<HTMLPreElement>('.prose pre').forEach((pre) => {
+	document.querySelectorAll<HTMLPreElement>('.prose pre:not([data-language="mermaid"])').forEach((pre) => {
 		const wrapper = document.createElement('div');
 		wrapper.className = 'code-block';
 		pre.parentNode!.insertBefore(wrapper, pre);
@@ -140,5 +161,47 @@ const showToc = toc && headings.filter((h) => h.depth >= 2 && h.depth <= 3).leng
 		window.addEventListener('scroll', update, { passive: true });
 		window.addEventListener('resize', update);
 		update();
+	}
+
+	// 4. 圖片點擊放大
+	const lightbox = document.querySelector<HTMLDialogElement>('.lightbox');
+	const lightboxImg = lightbox?.querySelector('img');
+	if (lightbox && lightboxImg) {
+		document.querySelectorAll<HTMLImageElement>('.prose img').forEach((img) => {
+			if (img.closest('a')) return; // 已經是連結的圖片不處理
+			img.classList.add('zoomable');
+			img.tabIndex = 0;
+			const open = () => {
+				lightboxImg.src = img.currentSrc || img.src;
+				lightboxImg.alt = img.alt;
+				lightbox.showModal();
+			};
+			img.addEventListener('click', open);
+			img.addEventListener('keydown', (e) => {
+				if (e.key === 'Enter' || e.key === ' ') {
+					e.preventDefault();
+					open();
+				}
+			});
+		});
+		lightbox.addEventListener('click', () => lightbox.close());
+	}
+
+	// 5. Mermaid 圖表：只有文章中有 ```mermaid 時才從 CDN 載入
+	const mermaidBlocks = document.querySelectorAll<HTMLPreElement>('.prose pre[data-language="mermaid"]');
+	if (mermaidBlocks.length) {
+		const MERMAID_URL = 'https://cdn.jsdelivr.net/npm/mermaid@11.17.2/dist/mermaid.esm.min.mjs';
+		mermaidBlocks.forEach((pre) => {
+			const div = document.createElement('div');
+			div.className = 'mermaid';
+			div.textContent = pre.querySelector('code')?.innerText ?? pre.innerText;
+			pre.replaceWith(div);
+		});
+		import(/* @vite-ignore */ MERMAID_URL)
+			.then(({ default: mermaid }) => {
+				mermaid.initialize({ startOnLoad: false, theme: 'neutral', securityLevel: 'strict' });
+				return mermaid.run({ querySelector: '.prose .mermaid' });
+			})
+			.catch((err) => console.error('Mermaid 載入失敗', err));
 	}
 </script>

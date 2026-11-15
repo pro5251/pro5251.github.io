@@ -17,6 +17,12 @@ const blog = defineCollection({
 			category: z.enum(categoryKeys),
 			tags: z.array(z.string()).default([]),
 			heroImage: image().optional(),
+			/** 封面圖替代文字 */
+			heroImageAlt: z.string().default(''),
+			/** 系列名稱：同系列的文章會在文章頁顯示系列目錄 */
+			series: z.string().optional(),
+			/** 在系列中的順序（省略則依發佈日期） */
+			seriesOrder: z.number().int().optional(),
 			/** 草稿：正式建置時不會出現 */
 			draft: z.boolean().default(false),
 			/** 置頂：出現在首頁最上方 */

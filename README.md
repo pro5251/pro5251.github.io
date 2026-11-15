@@ -9,13 +9,16 @@
 - **Markdown / MDX 寫作**：frontmatter 有型別檢查，寫錯分類或日期，建置時就會報錯
 - **分類與標籤**：分類是固定清單（網址乾淨），標籤可以自由新增
 - **全站搜尋**：用 [Pagefind](https://pagefind.app)，支援中文，可以依分類篩選；任何頁面按 <kbd>/</kbd> 都能直接開啟搜尋
-- **文章頁**：目錄（寬螢幕在側邊）、閱讀時間、閱讀進度條、上下篇、相關文章、標題錨點、程式碼複製按鈕
-- **Markdown 擴充**：GitHub 風格提示框（`> [!NOTE]`）、表格、待辦清單、註腳、語法高亮
+- **文章頁**：目錄（寬螢幕在側邊）、閱讀時間、閱讀進度條、上下篇、相關文章、標題錨點、程式碼複製按鈕、分享按鈕（複製連結、X、Facebook、LINE、Threads）
+- **系列文章**：同一個 `series` 的文章會顯示系列目錄與進度
+- **Markdown 擴充**：GitHub 風格提示框（`> [!NOTE]`）、Mermaid 圖表、表格、待辦清單、註腳、語法高亮
+- **圖片**：自動壓縮成 WebP、延遲載入，點擊可放大
 - **其他頁面**：首頁分頁、分類頁、標籤頁、歸檔頁（依年份）、關於、404
-- **SEO**：sitemap、RSS、robots.txt、Open Graph、JSON-LD 結構化資料、canonical
+- **SEO**：sitemap、RSS、robots.txt、Open Graph（含預設分享圖）、JSON-LD 結構化資料、canonical、Web App Manifest
 - **草稿與置頂**：`draft: true` 只在本機顯示，`pinned: true` 會固定在首頁最上方
 - **留言**：Giscus（GitHub Discussions），填好設定就會啟用
-- **自動部署**：推到 `main` 後，GitHub Actions 會自動建置並發佈
+- **品質把關**：單元測試、型別檢查、站內壞連結檢查，任何一項失敗都不會部署
+- **自動部署**：推到 `main` 後，GitHub Actions 會自動建置並發佈；PR 只做檢查；Dependabot 每月更新套件
 
 ## 快速開始
 
@@ -30,10 +33,13 @@ npm run dev        # 開發模式 http://localhost:4321（看得到草稿）
 | --- | --- |
 | `npm run dev` | 開發伺服器，存檔後自動重新整理 |
 | `npm run new -- "標題"` | 建立新文章（預設為草稿） |
-| `npm run build` | 型別檢查、建置網站、建立搜尋索引，輸出到 `dist/` |
-| `npm run build:fast` | 略過型別檢查的建置 |
+| `npm run build` | 測試 → 型別檢查 → 建置 → 壞連結檢查 → 搜尋索引，輸出到 `dist/` |
+| `npm run build:fast` | 只建置與建立搜尋索引（略過檢查） |
 | `npm run preview` | 預覽建置結果（要測試搜尋請用這個） |
 | `npm run check` | 只跑型別檢查 |
+| `npm run test` | 只跑單元測試 |
+| `npm run check:links` | 只跑壞連結檢查（需先 build） |
+| `npm run og` | 依網站名稱重新產生預設分享圖 `public/og-default.png` |
 
 ## 寫文章
 
@@ -58,7 +64,10 @@ pubDate: 2026-11-15            # 必填，發佈日期
 updatedDate: 2026-11-20        # 選填，更新日期
 category: tech                 # 必填，必須是 src/consts.ts 的 CATEGORIES 之一
 tags: [Astro, 筆記]            # 選填
-heroImage: ./cover.jpg         # 選填，封面圖（相對路徑）
+heroImage: ./cover.jpg         # 選填，封面圖（相對路徑），也會當作社群分享圖
+heroImageAlt: "封面說明"        # 選填，封面圖替代文字
+series: K3s 入門               # 選填，系列名稱
+seriesOrder: 1                 # 選填，在系列中的順序（省略則依日期）
 draft: true                    # 選填，草稿不會出現在正式網站
 pinned: false                  # 選填，置頂
 toc: true                      # 選填，是否顯示目錄（預設 true）
@@ -77,9 +86,22 @@ src/content/blog/my-trip/
 └── photo-1.png
 ```
 
-在文章裡用相對路徑 `![說明](./photo-1.png)` 引用，建置時會自動壓縮並轉成 WebP。
+在文章裡用相對路徑 `![說明](./photo-1.png)` 引用，建置時會自動壓縮並轉成 WebP。讀者點圖片可以放大。
 
-### 4. 發佈
+### 4. 圖表（Mermaid）
+
+程式碼區塊標上 `mermaid` 就會畫成圖表，支援流程圖、時序圖、甘特圖等（[語法](https://mermaid.js.org/intro/)）：
+
+````md
+```mermaid
+flowchart LR
+    A[寫文章] --> B[git push] --> C[自動上線]
+```
+````
+
+Mermaid 只在有用到的文章才會載入，不影響其他頁面的速度。
+
+### 5. 發佈
 
 把 `draft: true` 刪掉，commit 後推到 `main`，大約一分鐘後網站就會更新。
 
@@ -106,6 +128,8 @@ export const CATEGORIES = {
 大部分設定都在 `src/consts.ts`：網站名稱、介紹、作者、每頁文章數、選單、社群連結、分類、Giscus。
 
 顏色與排版在 `src/styles/global.css` 最上方的 `:root` 變數。
+
+改了網站名稱或介紹後，執行 `npm run og` 重新產生預設分享圖，並同步修改 `public/site.webmanifest` 的 `name`。
 
 ## 第一次部署到 GitHub Pages
 
@@ -143,16 +167,21 @@ export const CATEGORIES = {
 ```
 ├── .github/workflows/deploy.yml   # 自動部署
 ├── public/                        # 原樣複製的靜態檔（favicon 等）
-├── scripts/new-post.mjs           # 建立新文章
+├── scripts/
+│   ├── new-post.mjs               # 建立新文章
+│   ├── check-links.mjs            # 建置後檢查站內壞連結
+│   └── og-image.mjs               # 產生預設分享圖
 ├── src/
 │   ├── components/                # 頁首、頁尾、文章列表、目錄、留言等元件
 │   ├── content/blog/              # ← 文章放這裡
 │   ├── layouts/                   # 版型
-│   ├── lib/posts.ts               # 文章查詢、分類、標籤、閱讀時間、相關文章
+│   ├── lib/posts.ts               # 文章查詢、分類、標籤
+│   ├── lib/utils.ts               # 閱讀時間、相關文章、系列等純函式（有單元測試）
 │   ├── pages/                     # 路由（每個檔案就是一個網址）
 │   ├── plugins/                   # Markdown 外掛（提示框、外部連結）
 │   ├── styles/global.css          # 全站樣式
 │   ├── consts.ts                  # ← 網站設定
 │   └── content.config.ts          # 文章 frontmatter 的欄位定義
+├── tests/                         # 單元測試（vitest）
 └── astro.config.mjs               # Astro 設定（網址、Markdown）
 ```

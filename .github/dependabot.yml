@@ -1,0 +1,21 @@
+# 每月檢查一次套件更新，同類更新合併成一個 PR，避免太吵
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: monthly
+    groups:
+      astro:
+        patterns: ['astro', '@astrojs/*']
+      dev-tools:
+        dependency-type: development
+    open-pull-requests-limit: 5
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    groups:
+      actions:
+        patterns: ['*']

@@ -1,0 +1,40 @@
+---
+import { postUrl, type Post } from '../lib/posts';
+
+interface Props {
+	series: string;
+	/** 同系列文章（已依順序排好） */
+	posts: Post[];
+	currentId: string;
+}
+
+const { series, posts, currentId } = Astro.props;
+const index = posts.findIndex((p) => p.id === currentId);
+---
+
+{
+	posts.length > 1 && (
+		<nav class="series" aria-label={`系列：${series}`} data-pagefind-ignore>
+			<details open={posts.length <= 6}>
+				<summary>
+					<span class="series-label">系列</span>
+					<span class="series-name">{series}</span>
+					<span class="series-progress">
+						第 {index + 1} / {posts.length} 篇
+					</span>
+				</summary>
+				<ol>
+					{posts.map((p) => (
+						<li class:list={{ current: p.id === currentId }}>
+							{p.id === currentId ? (
+								<span aria-current="page">{p.data.title}</span>
+							) : (
+								<a href={postUrl(p)}>{p.data.title}</a>
+							)}
+						</li>
+					))}
+				</ol>
+			</details>
+		</nav>
+	)
+}

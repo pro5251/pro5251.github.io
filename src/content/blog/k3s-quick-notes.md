@@ -4,6 +4,8 @@ description: 在 Windows 的 WSL 裡安裝 K3s，並用 Flux 做 GitOps 的重�
 pubDate: 2026-11-10
 category: notes
 tags: [Kubernetes, K3s, WSL]
+series: K3s 入門
+seriesOrder: 1
 ---
 
 這篇是範例文章，示範「學習筆記」分類。你可以把它刪掉，換成自己的內容。

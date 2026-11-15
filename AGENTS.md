@@ -5,7 +5,8 @@
 ## 開發
 
 - 開發伺服器請用背景模式：`npx astro dev --background`，用 `astro dev stop` / `status` / `logs` 管理
-- 提交前執行 `npm run build`（包含 `astro check` 型別檢查與 Pagefind 索引），通過才 commit
+- 提交前執行 `npm run build`（依序：vitest 單元測試 → `astro check` → 建置 → 站內壞連結檢查 → Pagefind 索引），通過才 commit
+- 純邏輯放 `src/lib/utils.ts` 並在 `tests/` 補測試；`src/lib/posts.ts` 只放依賴 `astro:content` 的部分
 - 搜尋只在 build 後有效，用 `npm run preview` 測試
 
 ## 慣例

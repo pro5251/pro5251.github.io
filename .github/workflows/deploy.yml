@@ -6,6 +6,9 @@ on:
     paths-ignore:
       - 'README.md'
       - 'docs/**'
+  # PR 只建置檢查（測試、型別、壞連結），不部署
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -15,7 +18,7 @@ permissions:
 
 # 同時只跑一個部署；新的推送會取消還在排隊的舊部署
 concurrency:
-  group: pages
+  group: pages-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -34,13 +37,16 @@ jobs:
       # astro check（型別檢查）→ astro build → pagefind（建立搜尋索引）
       - run: npm run build
 
-      - uses: actions/configure-pages@v5
+      - if: github.event_name != 'pull_request'
+        uses: actions/configure-pages@v5
 
-      - uses: actions/upload-pages-artifact@v4
+      - if: github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v4
         with:
           path: dist
 
   deploy:
+    if: github.event_name != 'pull_request'
     needs: build
     runs-on: ubuntu-latest
     environment:
