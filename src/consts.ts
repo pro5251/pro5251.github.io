@@ -51,3 +51,16 @@ export const GISCUS = {
 	mapping: 'pathname',
 	lang: 'zh-TW',
 };
+
+/**
+ * 流量統計（都不使用 cookie，不需要 cookie 同意橫幅）。填一個就會啟用，都留空則不載入。
+ * - GoatCounter：到 https://www.goatcounter.com 註冊，填入代碼（例如 'myblog' 對應 myblog.goatcounter.com）
+ * - Cloudflare Web Analytics：在 Cloudflare 後台新增網站，填入 token
+ */
+export const ANALYTICS = {
+	goatcounter: '',
+	cloudflareToken: '',
+};
+
+/** Google Search Console 網站驗證碼（HTML 標記方式的 content 值），留空則不輸出 */
+export const GOOGLE_SITE_VERIFICATION = '';

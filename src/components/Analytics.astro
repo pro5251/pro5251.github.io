@@ -1,0 +1,28 @@
+---
+import { ANALYTICS } from '../consts';
+
+// 只在正式建置時載入，避免開發時灌水
+const enabled = import.meta.env.PROD;
+const { goatcounter, cloudflareToken } = ANALYTICS;
+---
+
+{
+	enabled && goatcounter && (
+		<script
+			is:inline
+			async
+			data-goatcounter={`https://${goatcounter}.goatcounter.com/count`}
+			src="https://gc.zgo.at/count.js"
+		/>
+	)
+}
+{
+	enabled && cloudflareToken && (
+		<script
+			is:inline
+			defer
+			src="https://static.cloudflareinsights.com/beacon.min.js"
+			data-cf-beacon={JSON.stringify({ token: cloudflareToken })}
+		/>
+	)
+}

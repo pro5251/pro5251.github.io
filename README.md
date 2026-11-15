@@ -151,6 +151,13 @@ export const CATEGORIES = {
 3. 到 <https://giscus.app/zh-TW>，輸入 `pro5251/pro5251.github.io`，Discussion 分類選 **Announcements**
 4. 把頁面產生的 `data-repo-id` 和 `data-category-id` 填到 `src/consts.ts` 的 `GISCUS.repoId` 和 `GISCUS.categoryId`
 
+## 流量統計與搜尋引擎
+
+都在 `src/consts.ts` 設定，留空就不啟用：
+
+- **流量統計**：`ANALYTICS.goatcounter`（[GoatCounter](https://www.goatcounter.com) 代碼）或 `ANALYTICS.cloudflareToken`（Cloudflare Web Analytics）。兩者都不用 cookie，只在正式網站載入
+- **Google Search Console**：選「HTML 標記」驗證方式，把 `content` 的值填到 `GOOGLE_SITE_VERIFICATION`；驗證後提交 `https://pro5251.github.io/sitemap-index.xml`
+
 ## 改用自訂網域
 
 1. 在 DNS 加上記錄：
