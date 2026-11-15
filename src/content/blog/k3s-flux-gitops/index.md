@@ -3,7 +3,7 @@ title: 用 Flux 在 K3s 上做 GitOps
 description: 系列第二篇：把叢集設定放進 Git，讓 Flux 自動同步。示範 Mermaid 圖表與文章內圖片。
 pubDate: 2026-11-12
 category: notes
-tags: [Kubernetes, K3s, Flux, GitOps]
+tags: [Kubernetes, K3s, Flux, GitOps, CI/CD]
 series: K3s 入門
 seriesOrder: 2
 ---

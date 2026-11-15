@@ -15,9 +15,20 @@ export interface PostLike {
 
 const CJK = /[぀-ヿ㐀-鿿豈-﫿가-힯]/g;
 
-/** 標籤轉網址用的 slug：轉小寫、空白換成 - ，保留中文 */
+/**
+ * 標籤轉網址用的 slug：轉小寫、空白換成 - ，保留中文。
+ * 常見的程式語言寫法先轉成文字（C# → c-sharp），其餘會破壞路徑的字元（/ ? # % \）換成 -。
+ */
 export function tagSlug(tag: string): string {
-	return tag.trim().toLowerCase().replace(/\s+/g, '-');
+	return tag
+		.trim()
+		.toLowerCase()
+		.replace(/^\.(?=[a-z])/, 'dot')
+		.replace(/#/g, '-sharp')
+		.replace(/\+/g, '-plus')
+		.replace(/[\s/?#%\\&]+/g, '-')
+		.replace(/-{2,}/g, '-')
+		.replace(/^-+|-+$/g, '');
 }
 
 /** 估算閱讀分鐘數：中日韓文字每分鐘約 400 字、英文每分鐘約 200 字，至少 1 分鐘 */

@@ -13,6 +13,15 @@ describe('tagSlug', () => {
 	it('保留中文', () => {
 		expect(tagSlug('部落格')).toBe('部落格');
 	});
+	it('網址特殊字元不會破壞路徑', () => {
+		expect(tagSlug('CI/CD')).toBe('ci-cd');
+		expect(tagSlug('C#')).toBe('c-sharp');
+		expect(tagSlug('C++')).toBe('c-plus-plus');
+		expect(tagSlug('.NET')).toBe('dotnet');
+		expect(tagSlug('Node.js')).toBe('node.js');
+		expect(tagSlug('a?b%c\\d')).toBe('a-b-c-d');
+		expect(tagSlug('--x--')).toBe('x');
+	});
 });
 
 describe('readingTime', () => {
