@@ -11,12 +11,13 @@
 - **全站搜尋**：用 [Pagefind](https://pagefind.app)，支援中文，可以依分類篩選；任何頁面按 <kbd>/</kbd> 都能直接開啟搜尋
 - **文章頁**：目錄（寬螢幕在側邊）、閱讀時間、閱讀進度條、上下篇、相關文章、標題錨點、程式碼複製按鈕、分享按鈕（複製連結、X、Facebook、LINE、Threads）
 - **系列文章**：同一個 `series` 的文章會顯示系列目錄與進度
-- **Markdown 擴充**：GitHub 風格提示框（`> [!NOTE]`）、Mermaid 圖表、表格、待辦清單、註腳、語法高亮
+- **Markdown 擴充**：GitHub 風格提示框（`> [!NOTE]`）、Mermaid 圖表、數學公式（KaTeX）、圖片說明、表格、待辦清單、註腳、語法高亮
 - **圖片**：自動壓縮成 WebP、延遲載入，點擊可放大
 - **其他頁面**：首頁分頁、分類頁、標籤頁、歸檔頁（依年份）、關於、404
-- **SEO**：sitemap、RSS、robots.txt、Open Graph（含預設分享圖）、JSON-LD 結構化資料、canonical、Web App Manifest
+- **SEO**：sitemap、全站與各分類 RSS、robots.txt、Open Graph（含預設分享圖）、JSON-LD 結構化資料、canonical、Web App Manifest
 - **草稿與置頂**：`draft: true` 只在本機顯示，`pinned: true` 會固定在首頁最上方
 - **留言**：Giscus（GitHub Discussions），填好設定就會啟用
+- **在 GitHub 上編輯**：文章底部有編輯連結，讀者可以直接提 PR 修正錯字
 - **品質把關**：單元測試、型別檢查、站內壞連結檢查，任何一項失敗都不會部署
 - **自動部署**：推到 `main` 後，GitHub Actions 會自動建置並發佈；PR 只做檢查；Dependabot 每月更新套件
 
@@ -101,7 +102,12 @@ flowchart LR
 
 Mermaid 只在有用到的文章才會載入，不影響其他頁面的速度。
 
-### 5. 發佈
+### 5. 數學公式與圖片說明
+
+- 公式用 `$$` 包起來：寫在句子中是行內公式，獨立成段是區塊公式。單一個 `$` 不會觸發，寫價格不用擔心
+- 圖片加上標題就會顯示說明：`![替代文字](./a.png "圖片下方的說明")`
+
+### 6. 發佈
 
 把 `draft: true` 刪掉，commit 後推到 `main`，大約一分鐘後網站就會更新。
 

@@ -1205,3 +1205,25 @@ main.container.wide {
 .post-main {
 	min-width: 0;
 }
+
+/* ---------- 數學公式 ---------- */
+.prose .katex-display {
+	margin: 0 0 1.2em;
+	overflow-x: auto;
+	overflow-y: hidden;
+	padding: 4px 0;
+}
+.prose .katex {
+	font-size: 1.05em;
+}
+
+.edit-link {
+	margin: 16px 0 0;
+	color: var(--muted);
+	font-size: 0.85rem;
+}
+.feed-link {
+	margin-left: 8px;
+	font-size: 0.85rem;
+	white-space: nowrap;
+}

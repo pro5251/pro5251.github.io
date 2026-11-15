@@ -64,3 +64,9 @@ export const ANALYTICS = {
 
 /** Google Search Console 網站驗證碼（HTML 標記方式的 content 值），留空則不輸出 */
 export const GOOGLE_SITE_VERIFICATION = '';
+
+/** GitHub repo（用於文章頁的「在 GitHub 上編輯」連結），留空則不顯示 */
+export const REPO = {
+	name: 'pro5251/pro5251.github.io',
+	branch: 'main',
+};

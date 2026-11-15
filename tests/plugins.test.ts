@@ -108,3 +108,31 @@ describe('rehypeTaskListA11y', () => {
 		expect(text.properties.ariaLabel).toBeUndefined();
 	});
 });
+
+describe('remarkFigure', () => {
+	const run = async (tree: any) => {
+		const { remarkFigure } = await import('../src/plugins/remark-figure.mjs');
+		(remarkFigure() as (t: any) => void)(tree);
+		return tree;
+	};
+	const para = (...children: object[]) => ({ type: 'root', children: [{ type: 'paragraph', children }] });
+	const img = (title?: string) => ({ type: 'image', url: './a.png', alt: 'a', title });
+
+	it('有 title 的獨立圖片轉成 figure + figcaption', async () => {
+		const tree = await run(para(img('圖說文字')));
+		const p = tree.children[0];
+		expect(p.data.hName).toBe('figure');
+		expect(p.children[1].data.hName).toBe('figcaption');
+		expect(p.children[1].children[0].value).toBe('圖說文字');
+	});
+
+	it('沒有 title 的圖片不轉換', async () => {
+		const tree = await run(para(img()));
+		expect(tree.children[0].data).toBeUndefined();
+	});
+
+	it('圖片和文字混在同一段時不轉換', async () => {
+		const tree = await run(para({ type: 'text', value: '前面有字 ' }, img('說明')));
+		expect(tree.children[0].data).toBeUndefined();
+	});
+});

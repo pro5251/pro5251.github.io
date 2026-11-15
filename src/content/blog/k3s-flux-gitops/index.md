@@ -24,7 +24,7 @@ flowchart LR
 
 同樣的概念也可以用圖片表示（點圖片可以放大）：
 
-![GitOps 流程：Git repo 經由 Flux 同步到 K3s](./flow.png)
+![GitOps 流程：Git repo 經由 Flux 同步到 K3s](./flow.png "Git 是唯一的事實來源，Flux 負責讓叢集跟上")
 
 ## Bootstrap
 

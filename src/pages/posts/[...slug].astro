@@ -10,6 +10,7 @@ import ShareLinks from '../../components/ShareLinks.astro';
 import TableOfContents from '../../components/TableOfContents.astro';
 import TagList from '../../components/TagList.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import { REPO } from '../../consts';
 import { categoryName, getPosts, getRelatedPosts, getSeriesPosts, type Post } from '../../lib/posts';
 
 export async function getStaticPaths() {
@@ -40,6 +41,9 @@ const { title, description, pubDate, updatedDate, category, tags, heroImage, her
 	post.data;
 const showToc = toc && headings.filter((h) => h.depth >= 2 && h.depth <= 3 && h.slug !== 'footnote-label').length >= 2;
 const hasMermaid = post.body?.includes('```mermaid') ?? false;
+const editUrl =
+	REPO.name && post.filePath ? `https://github.com/${REPO.name}/edit/${REPO.branch}/${post.filePath.replaceAll('\\', '/')}` : '';
+const hasMath = post.body?.includes('$$') ?? false;
 ---
 
 <BaseLayout
@@ -51,6 +55,11 @@ const hasMermaid = post.body?.includes('```mermaid') ?? false;
 	wide={showToc}
 >
 	{hasMermaid && <link slot="head" rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />}
+	{
+		hasMath && (
+			<link slot="head" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.19.1/dist/katex.min.css" crossorigin="anonymous" />
+		)
+	}
 	<div class="reading-progress" aria-hidden="true"></div>
 	<div class:list={['post-layout', { 'has-toc': showToc }]}>
 		<div class="post-main">
@@ -81,6 +90,13 @@ const hasMermaid = post.body?.includes('```mermaid') ?? false;
 				<footer class="post-footer">
 					<TagList tags={tags} />
 					<ShareLinks title={title} />
+					{
+						editUrl && (
+							<p class="edit-link" data-pagefind-ignore>
+								發現錯字或想補充？<a href={editUrl} target="_blank" rel="noopener noreferrer">在 GitHub 上編輯這篇文章</a>
+							</p>
+						)
+					}
 				</footer>
 			</article>
 
