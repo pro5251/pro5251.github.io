@@ -29,6 +29,8 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 				autofocus: true,
 				translations: { placeholder: '輸入關鍵字搜尋文章…', zero_results: '找不到「[SEARCH_TERM]」相關的文章' },
 			});
+			var input = document.querySelector('#search input');
+			if (input) input.setAttribute('aria-label', '搜尋文章');
 			if (q) ui.triggerSearch(q);
 		};
 		s.onerror = function () {

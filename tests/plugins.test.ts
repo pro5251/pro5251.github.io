@@ -95,3 +95,16 @@ describe('rehypeExternalLinks', () => {
 		}
 	});
 });
+
+describe('rehypeTaskListA11y', () => {
+	it('依勾選狀態加上 aria-label', async () => {
+		const { rehypeTaskListA11y } = await import('../src/plugins/rehype-task-list-a11y.mjs');
+		const done: any = { type: 'element', tagName: 'input', properties: { type: 'checkbox', checked: true }, children: [] };
+		const todo: any = { type: 'element', tagName: 'input', properties: { type: 'checkbox', checked: false }, children: [] };
+		const text: any = { type: 'element', tagName: 'input', properties: { type: 'text' }, children: [] };
+		(rehypeTaskListA11y() as (t: any) => void)({ type: 'root', children: [done, todo, text] });
+		expect(done.properties.ariaLabel).toBe('已完成');
+		expect(todo.properties.ariaLabel).toBe('未完成');
+		expect(text.properties.ariaLabel).toBeUndefined();
+	});
+});

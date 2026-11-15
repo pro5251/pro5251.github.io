@@ -773,6 +773,20 @@ main.container.wide {
 	color: var(--muted);
 	font-size: 0.875rem;
 }
+.prose a,
+.not-found p a {
+	text-decoration: underline;
+	text-decoration-color: color-mix(in srgb, var(--accent) 35%, transparent);
+	text-decoration-thickness: 1px;
+	text-underline-offset: 3px;
+}
+.prose a:hover,
+.not-found p a:hover {
+	text-decoration-color: currentColor;
+}
+.prose a.heading-anchor {
+	text-decoration: none;
+}
 .prose a.external::after {
 	content: '↗';
 	margin-left: 2px;
@@ -826,7 +840,7 @@ main.container.wide {
 	padding: 16px 18px;
 	border: 1px solid var(--border);
 	border-radius: var(--radius);
-	background: var(--bg-soft) !important;
+	background: var(--bg) !important;
 	overflow-x: auto;
 	font-size: 0.875rem;
 	line-height: 1.65;
