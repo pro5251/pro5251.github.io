@@ -10,6 +10,10 @@ updates:
         patterns: ['astro', '@astrojs/*']
       dev-tools:
         dependency-type: development
+    ignore:
+      # @astrojs/check 目前只支援 TypeScript 5/6，等它支援 7 再移除這條
+      - dependency-name: typescript
+        update-types: ['version-update:semver-major']
     open-pull-requests-limit: 5
 
   - package-ecosystem: github-actions
