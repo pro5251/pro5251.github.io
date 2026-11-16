@@ -45,9 +45,9 @@ export type CategoryKey = keyof typeof CATEGORIES;
  */
 export const GISCUS = {
 	repo: 'pro5251/pro5251.github.io',
-	repoId: '',
+	repoId: 'R_kgDOVvwgSg',
 	category: 'Announcements',
-	categoryId: '',
+	categoryId: 'DIC_kwDOVvwgSs4DLOLK',
 	mapping: 'pathname',
 	lang: 'zh-TW',
 };
