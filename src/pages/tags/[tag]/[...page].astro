@@ -1,0 +1,33 @@
+---
+import type { GetStaticPaths, Page } from 'astro';
+import Pagination from '../../../components/Pagination.astro';
+import PostList from '../../../components/PostList.astro';
+import { SITE } from '../../../consts';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { getPosts, getTagCounts, tagSlug, type Post } from '../../../lib/posts';
+
+export const getStaticPaths = (async ({ paginate }) => {
+	const posts = await getPosts();
+	return getTagCounts(posts).flatMap((t) =>
+		paginate(
+			posts.filter((p) => p.data.tags.some((x) => tagSlug(x) === t.slug)),
+			{ params: { tag: t.slug }, props: { name: t.name }, pageSize: SITE.postsPerPage },
+		),
+	);
+}) satisfies GetStaticPaths;
+
+interface Props {
+	name: string;
+	page: Page<Post>;
+}
+
+const { name, page } = Astro.props;
+const suffix = page.currentPage > 1 ? ` · 第 ${page.currentPage} 頁` : '';
+---
+
+<BaseLayout title={`#${name}${suffix}`} description={`標籤「${name}」的所有文章。`}>
+	<p class="breadcrumb"><a href="/tags/">標籤</a> /</p>
+	<h1 class="page-title">#{name}<span class="count">{page.total} 篇</span></h1>
+	<PostList posts={page.data} />
+	<Pagination page={page} />
+</BaseLayout>

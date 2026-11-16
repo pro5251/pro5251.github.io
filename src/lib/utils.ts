@@ -84,3 +84,21 @@ export function getSeriesPosts<T extends PostLike>(series: string, posts: T[]): 
 				a.data.pubDate.valueOf() - b.data.pubDate.valueOf(),
 		);
 }
+
+/**
+ * 把 HTML 裡的站內相對網址（href="/..."、src="/..."、srcset）轉成絕對網址。
+ * RSS 閱讀器不知道文章來自哪個網站，相對網址的圖片和連結會失效。
+ */
+export function absolutizeHtml(html: string, site: string | URL): string {
+	const base = new URL(site);
+	const abs = (path: string) => new URL(path, base).href;
+	return html
+		.replace(/\s(href|src)="(\/(?!\/)[^"]*)"/g, (_, attr, path) => ` ${attr}="${abs(path)}"`)
+		.replace(/\ssrcset="([^"]*)"/g, (_, set: string) => {
+			const items = set.split(',').map((item) => {
+				const [url, ...rest] = item.trim().split(/\s+/);
+				return [url.startsWith('/') && !url.startsWith('//') ? abs(url) : url, ...rest].join(' ');
+			});
+			return ` srcset="${items.join(', ')}"`;
+		});
+}

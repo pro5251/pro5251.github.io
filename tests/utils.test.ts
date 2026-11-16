@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { getRelatedPosts, getSeriesPosts, groupByYear, readingTime, sortByDate, tagSlug, type PostLike } from '../src/lib/utils';
+import { absolutizeHtml, getRelatedPosts, getSeriesPosts, groupByYear, readingTime, sortByDate, tagSlug, type PostLike } from '../src/lib/utils';
 
 function post(id: string, date: string, extra: Partial<PostLike['data']> = {}): PostLike {
 	return { id, data: { pubDate: new Date(date), category: 'tech', tags: [], ...extra } };
@@ -90,5 +90,32 @@ describe('getSeriesPosts', () => {
 			post('other', '2026-01-02', { series: 'Other' }),
 		];
 		expect(getSeriesPosts('K8s', list).map((p) => p.id)).toEqual(['p1', 'p2', 'p3']);
+	});
+});
+
+describe('absolutizeHtml', () => {
+	const site = 'https://pro5251.github.io';
+
+	it('站內相對網址轉成絕對網址', () => {
+		const html = '<a href="/posts/a/">a</a><img src="/_astro/x.webp">';
+		expect(absolutizeHtml(html, site)).toBe(
+			'<a href="https://pro5251.github.io/posts/a/">a</a><img src="https://pro5251.github.io/_astro/x.webp">',
+		);
+	});
+
+	it('外部網址、協定相對網址與錨點不變', () => {
+		const html = '<a href="https://x.com/">x</a><img src="//cdn.example.com/a.png"><a href="#top">t</a>';
+		expect(absolutizeHtml(html, site)).toBe(html);
+	});
+
+	it('處理 srcset 的多個候選', () => {
+		const html = '<img srcset="/a-400.webp 400w, /a-800.webp 800w">';
+		expect(absolutizeHtml(html, site)).toBe(
+			'<img srcset="https://pro5251.github.io/a-400.webp 400w, https://pro5251.github.io/a-800.webp 800w">',
+		);
+	});
+
+	it('保留中文路徑', () => {
+		expect(absolutizeHtml('<a href="/tags/寫作/">t</a>', site)).toContain('https://pro5251.github.io/tags/');
 	});
 });

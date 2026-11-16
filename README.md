@@ -13,8 +13,8 @@
 - **系列文章**：同一個 `series` 的文章會顯示系列目錄與進度
 - **Markdown 擴充**：GitHub 風格提示框（`> [!NOTE]`）、Mermaid 圖表、數學公式（KaTeX）、圖片說明、表格、待辦清單、註腳、語法高亮
 - **圖片**：自動壓縮成 WebP、延遲載入，點擊可放大
-- **其他頁面**：首頁分頁、分類頁、標籤頁、歸檔頁（依年份）、關於、404
-- **SEO**：sitemap、全站與各分類 RSS、robots.txt、Open Graph（含預設分享圖）、JSON-LD 結構化資料、canonical、Web App Manifest
+- **其他頁面**：首頁、分類頁、標籤頁都有分頁，歸檔頁（依年份）、關於、404
+- **SEO**：sitemap、全站與各分類 RSS（全文輸出，圖片可在閱讀器顯示）、robots.txt、Open Graph（含預設分享圖）、JSON-LD 結構化資料、canonical、Web App Manifest
 - **草稿與置頂**：`draft: true` 只在本機顯示，`pinned: true` 會固定在首頁最上方
 - **留言**：Giscus（GitHub Discussions），填好設定就會啟用
 - **在 GitHub 上編輯**：文章底部有編輯連結，讀者可以直接提 PR 修正錯字
